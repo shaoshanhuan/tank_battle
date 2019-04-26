@@ -3,11 +3,20 @@
 <head>
 	<meta charset="UTF-8">
 	<title>坦克大大战</title>
+	<style>
+		canvas{
+			background:black;
+		}
+	</style>
 </head>
 <body>
-	<canvas></canvas>
+	<canvas id="canvas" width="320" height="320" style="border:1px solid #333;"></canvas>
+	
+	<script src="js/Game.js"></script>
+	<script src="js/Player.js"></script>
 	<script>
-		var a = 10;
+		// 咱们的html页面中就一条语句
+		new Game();
 	</script>
 </body>
 </html>
