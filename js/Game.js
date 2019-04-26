@@ -47,6 +47,9 @@ Game.prototype.start = function(){
     this.f = 0;
     // 实例化玩家，this是Game类的实例
     this.player = new Player(this);
+    // 实例化地图
+    this.map = new Map(this);
+
     // 游戏的唯一定时器
     setInterval(function(){
         // 清屏
@@ -62,8 +65,12 @@ Game.prototype.start = function(){
         self.player.update();
         self.player.render();
 
+        // 每帧都要更新地图、渲染地图
+        self.map.update();
+        self.map.render();
+
         // 输出坦克
-        console.log(self.player)
+        // console.log(self.player)
     }, 20);
 }
 // 绑定监听
@@ -73,37 +80,38 @@ Game.prototype.bindEvent = function(){
     // 键盘按下
     document.onkeydown = function(e){
         if(e.keyCode == 37){
-            // 动画
-            self.player.isMoving = true;
             // 按左键，如果坦克当前不是向左走
             if(self.player.direction != 3){
                 // 命令坦克改变方向
                 self.player.changeDirection(3);
             }
-        }else if(e.keyCode == 38){
             // 动画
-            self.player.isMoving = true;
+            self.player.dong();
+        }else if(e.keyCode == 38){
+           
             // 按上键，如果坦克当前不是向上走
             if(self.player.direction != 0){
                 // 命令坦克改变方向
                 self.player.changeDirection(0);
             }
-        }else if(e.keyCode == 39){
             // 动画
-            self.player.isMoving = true;
+            self.player.dong();
+        }else if(e.keyCode == 39){
             // 按右键，如果坦克当前不是向上走
             if(self.player.direction != 1){
                 // 命令坦克改变方向
                 self.player.changeDirection(1);
             }
-        }else if(e.keyCode == 40){
             // 动画
-            self.player.isMoving = true;
+            self.player.dong();
+        }else if(e.keyCode == 40){
             // 按右键，如果坦克当前不是向下走
             if(self.player.direction != 2){
                 // 命令坦克改变方向
                 self.player.changeDirection(2);
             }
+            // 动画
+            self.player.dong();
         }
     }
     document.onkeyup = function(e){

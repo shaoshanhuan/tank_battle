@@ -25,9 +25,18 @@
         <button onclick="changesize(32)">笔触32</button>
     </div>
     <canvas width="320" height="320" style="border:1px solid #333;"></canvas>
+    <textarea name="" id="textarea" cols="50" rows="20"></textarea>
+    
     <script>
         var canvas = document.getElementsByTagName("canvas")[0];
         var ctx = canvas.getContext("2d");
+
+        // 地图矩阵
+        // new Array(20).fill()表示用什么东西填充
+        var arr = [];
+        for(var i = 0 ; i < 20 ; i++){
+            arr.push(new Array(24).fill(0));
+        }
 
         var img = new Image();
         // 加载图片
@@ -59,6 +68,31 @@
                 x -= 16;
                 y -= 16;
             }
+            // 对应的行和列
+            var col = parseInt(x / 16);
+            var row = parseInt(y / 16);
+            
+            // 改变数组
+            if(size == 32){
+                // 改变了4个格
+                arr[row][col] = type;
+                if(col + 1 <= 19){
+                    arr[row][col + 1] = type;
+                }
+                if(row + 1 <= 19){
+                    arr[row + 1][col] = type;
+                }
+                if(col + 1 <= 19 && row + 1 <= 19){
+                    arr[row + 1][col + 1] = type;
+                }
+            }else if(size == 16){
+                // 改变了1个格
+                arr[row][col] = type;
+            }
+
+            // JSON.stringify()表示把数组变为文本形式原样输出
+            document.getElementById("textarea").value = JSON.stringify(arr);
+
             // 如果全局信号量type是0，表示清除，如果不是0，表示画
             if(type != 0){
                 ctx.drawImage(img, (type - 1) * 32, 0, size, size, x, y, size, size);
