@@ -8,7 +8,9 @@ function Game(){
     // 资源，现在也是属性
     this.R = {
         "tile" : "tile.bmp",
-        "player1" : "player1.bmp"
+        "player1" : "player1.bmp",
+        "bullet" : "bullet.bmp",
+        "enemy" : "enemy.bmp"
     };
 
     // 备份this
@@ -50,8 +52,16 @@ Game.prototype.start = function(){
     // 实例化地图
     this.map = new Map(this);
 
+    // 子弹数组
+    this.bulletArr = [];
+    // 敌人数组
+    this.enemyArr = [];
+
+    // 实例化一个方便测试
+    new Enemy(this);
+
     // 游戏的唯一定时器
-    setInterval(function(){
+    this.timer = setInterval(function(){
         // 清屏
         self.ctx.clearRect(0, 0, 320, 320);
 
@@ -61,6 +71,11 @@ Game.prototype.start = function(){
         self.ctx.fillStyle = "white";
         self.ctx.fillText(self.f, 10, 20);
 
+        // 每200帧实例化一个敌人
+        if(self.f % 150 == 0){
+            new Enemy(self);
+        }
+
         // 每帧都要更新玩家、渲染玩家
         self.player.update();
         self.player.render();
@@ -69,9 +84,21 @@ Game.prototype.start = function(){
         self.map.update();
         self.map.render();
 
-        // 输出坦克
-        // console.log(self.player)
-    }, 20);
+        // 遍历每个子弹，让子弹渲染、更新
+        for(var i = 0 ; i < self.bulletArr.length ; i++){
+            self.bulletArr[i].update();
+            self.bulletArr[i] && self.bulletArr[i].render();
+        }
+
+        // 遍历每个敌人，让敌人渲染、更新
+        for(var i = 0 ; i < self.enemyArr.length ; i++){
+            self.enemyArr[i].update();
+            self.enemyArr[i] && self.enemyArr[i].render();
+        }
+
+      
+      
+    }, 10);
 }
 // 绑定监听
 Game.prototype.bindEvent = function(){
@@ -79,6 +106,13 @@ Game.prototype.bindEvent = function(){
     var self = this;
     // 键盘按下
     document.onkeydown = function(e){
+        if(e.keyCode == 32){
+            // 如果最后发射子弹的帧编号，与现在已经过去了100帧，就能发射
+            if(self.f - self.player.bf > 50){
+                new Bullet(self, self.player.direction, self.player.y, self.player.x, true);
+                self.player.bf = self.f;
+            }
+        }
         if(e.keyCode == 37){
             // 按左键，如果坦克当前不是向左走
             if(self.player.direction != 3){
@@ -88,7 +122,6 @@ Game.prototype.bindEvent = function(){
             // 动画
             self.player.dong();
         }else if(e.keyCode == 38){
-           
             // 按上键，如果坦克当前不是向上走
             if(self.player.direction != 0){
                 // 命令坦克改变方向

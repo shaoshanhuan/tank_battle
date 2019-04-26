@@ -3,7 +3,7 @@ function Player(game){
     this.game = game;
     // 自己所在的列、行
     this.col = 6;
-    this.row = 16;
+    this.row = 18;
     // 自己的位置
     this.x = this.col * 16;
     this.y = this.row * 16;
@@ -11,83 +11,48 @@ function Player(game){
     this.speed = 2;
     // 有限状态，自己的方向，0上1右2下3左
     this.direction = 0;
+    // 自己最后发射子弹的帧编号
+    this.bf = -100;
     // 有限状态，是否在运动
     this.isMoving = false;
 }
 // 更新类，这个类被定时器每帧调用
 Player.prototype.update = function(){
-    // 向上
+    // 判断自己是否在动
     if(this.isMoving){
         // 当自己处于运动状态（这个运动状态是玩家通过键盘更改的）
+        // 当向上的时候
         if(this.direction == 0){
             // 要判断是不是真的能更改这个状态值
-            // 要去把没走完的走完
-            if(this.check8point().T1 == 0 && this.check8point().T2 == 0){
-                this.isMoving = true;
-            }else{
-                if(this.y > 16 * this.row){
-                    this.isMoving = true;
-                }else{
-                    this.isMoving = false;
-                    return;
-                }
+            // 或者要去把没走完的走完
+            if(this.checkIsZudang(this.check8point().T1) && this.checkIsZudang(this.check8point().T2) || this.y > 16 * this.row){
+                this.y -= this.speed;
+                // 同时改一下row
+                this.row = parseInt(this.y / 16);
             }
         }else if(this.direction == 1){
-            // 要去把没走完的走完
-            if(this.check8point().R1 == 0 && this.check8point().R2 == 0){
-                this.isMoving = true;
-            }else{
-                if(this.x < 16 * this.col){
-                    this.isMoving = true;
-                }else{
-                    this.isMoving = false;
-                    return;
-                }
-            }
+            if(this.checkIsZudang(this.check8point().R1) && this.checkIsZudang(this.check8point().R2) || this.x < 16 * this.col){
+                this.x += this.speed;
+                // 同时改一下col
+                this.col = parseInt(this.x / 16);
+            } 
         }else if(this.direction == 2){
-            // 要去把没走完的走完
-            if(this.check8point().B1 == 0 && this.check8point().B2 == 0){
-                this.isMoving = true;
-            }else{
-                if(this.y < 16 * this.row){
-                    this.isMoving = true;
-                }else{
-                    this.isMoving = false;
-                    return;
-                }
+            if(this.checkIsZudang(this.check8point().B1) && this.checkIsZudang(this.check8point().B2) || this.y < 16 * this.row){
+                this.y += this.speed;
+                // 同时改一下row
+                this.row = parseInt(this.y / 16);
             }
         }else if(this.direction == 3){
-            // 要去把没走完的走完
-            if(this.check8point().L1 == 0 && this.check8point().L2 == 0){
-                this.isMoving = true;
-            }else{
-                if(this.x > 16 * this.col){
-                    this.isMoving = true;
-                }else{
-                    this.isMoving = false;
-                    return;
-                }
+            if(this.checkIsZudang(this.check8point().L1) && this.checkIsZudang(this.check8point().L2) || this.x > 16 * this.col){
+                this.x -= this.speed;
+                // 同时改一下col
+                this.col = parseInt(this.x / 16);
             }
-        }
-
-        if(this.direction == 0){
-            this.y -= this.speed;
-            // 同时改一下row
-            this.row = parseInt(this.y / 16);
-        }else if(this.direction == 1){
-            this.x += this.speed;
-            // 同时改一下col
-            this.col = parseInt(this.x / 16);
-        }else if(this.direction == 2){
-            this.y += this.speed;
-            // 同时改一下row
-            this.row = parseInt(this.y / 16);
-        }else if(this.direction == 3){
-            this.x -= this.speed;
-            // 同时改一下col
-            this.col = parseInt(this.x / 16);
         }
     }
+}
+Player.prototype.checkIsZudang = function(n){
+    return n == 0 || n == 3;
 }
 // 渲染类，这个类被定时器每帧调用
 Player.prototype.render = function(){
