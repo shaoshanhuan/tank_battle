@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        canvas{
+            background:black;
+        }
+    </style>
+</head>
+<body>
+    
+    <div>
+        <button onclick="changetype(0)">无</button>
+        <button onclick="changetype(1)">砖</button>
+        <button onclick="changetype(2)">铁</button>
+        <button onclick="changetype(3)">草</button>
+        <button onclick="changetype(4)">水</button>
+    </div>
+    <div>
+        <button onclick="changesize(16)">笔触16</button>
+        <button onclick="changesize(32)">笔触32</button>
+    </div>
+    <canvas width="320" height="320" style="border:1px solid #333;"></canvas>
+    <script>
+        var canvas = document.getElementsByTagName("canvas")[0];
+        var ctx = canvas.getContext("2d");
+
+        var img = new Image();
+        // 加载图片
+        img.src = "images/tile.bmp";
+
+        // 全局信号量，当前在画什么
+        // 0无、1砖、2铁、3草、4水
+        var type = 2;
+        // 全局信号量，当前笔触是多大
+        var size = 32;
+
+        // 改变类型
+        function changetype(n){
+            type = n;
+        }
+
+        // 改变笔触
+        function changesize(n){
+            size = n;
+        }
+
+        // 画小格，
+        function draw(mouseX, mouseY){
+            // 将鼠标指针，统一到16的倍数上去
+            var x = Math.round(mouseX / 16) * 16;
+            var y = Math.round(mouseY / 16) * 16;
+            // 如果全局信号量笔触是32的话，要减去16更合理，更趋向于鼠标中心
+            if(size == 32){
+                x -= 16;
+                y -= 16;
+            }
+            // 如果全局信号量type是0，表示清除，如果不是0，表示画
+            if(type != 0){
+                ctx.drawImage(img, (type - 1) * 32, 0, size, size, x, y, size, size);
+            }else{
+                ctx.clearRect(x, y, size, size);
+            }
+        }
+
+        // 程序是推演出来的，不是一步到位的！！！
+        // 鼠标事件监听
+        canvas.onmousedown = function(e){
+            draw(e.offsetX, e.offsetY);
+            canvas.onmousemove = function(e){
+                draw(e.offsetX, e.offsetY);  
+            }
+        }
+
+        document.onmouseup = function(){
+            canvas.onmousemove = null;
+        }
+    </script>
+</body>
+</html>
